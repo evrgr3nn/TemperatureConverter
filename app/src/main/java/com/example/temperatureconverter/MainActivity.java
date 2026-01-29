@@ -1,24 +1,55 @@
 package com.example.temperatureconverter;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import com.example.temperatureconverter.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+    public class MainActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        private ActivityMainBinding binding;
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // View Binding setup
+            binding = ActivityMainBinding.inflate(getLayoutInflater());
+            setContentView(binding.getRoot());
+
+            // Convert button click
+            binding.button.setOnClickListener(view -> convertTemperature());
+        }
+
+        private void convertTemperature() {
+
+            String fText = binding.fahEntry.getText().toString();
+            String cText = binding.celEntry.getText().toString();
+
+            Double fValue = parseDoubleOrNull(fText);
+            Double cValue = parseDoubleOrNull(cText);
+
+            // If both fields have numbers
+            if (fValue != null && cValue != null) {
+                double result = (fValue - 32) * 5 / 9;
+                binding.celEntry.setText(String.valueOf(result));
+            }
+            // Only Fahrenheit filled
+            else if (fValue != null) {
+                double result = (fValue - 32) * 5 / 9;
+                binding.celEntry.setText(String.valueOf(result));
+            }
+            // Only Celsius filled
+            else if (cValue != null) {
+                double result = (cValue * 9 / 5) + 32;
+                binding.fahEntry.setText(String.valueOf(result));
+            }
+        }
+
+        private Double parseDoubleOrNull(String value) {
+            try {
+                return Double.parseDouble(value);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
     }
-}
